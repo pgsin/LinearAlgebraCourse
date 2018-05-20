@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace LinLib
+namespace LinalLib
 {
     public class Matrix : ICloneable, IComparable<Matrix>
     {
@@ -122,9 +122,27 @@ namespace LinLib
         /// <param name="p">permutation matrix</param>
         /// <param name="u">upper-triangular matrix</param>
         /// <returns></returns>
-        public int EPAU_factorization(out Matrix e, out Matrix p, out Matrix u)
+        public int EPAU_factorizationE(out Matrix e, out Matrix p, out Matrix u)
         {
             return E_GaussEliminationForward(this, out e, out p, out u);
+        }
+
+        /// <summary>
+        /// EPA = U factorization
+        /// </summary>
+        /// <param name="e">elimination matrix</param>
+        /// <param name="p">permutation matrix</param>
+        /// <param name="u">upper-triangular matrix</param>
+        /// <returns></returns>
+        public int EPAU_factorizationL(out Matrix e, out Matrix p, out Matrix u)
+        {
+            int stdout = L_GaussEliminationForward(this, out var l, out p, out u);
+            if (stdout != 0)
+            {
+                e = null;
+                return stdout;
+            }
+            return l.ReverseL(out e);
         }
 
         /// <summary>
@@ -132,7 +150,7 @@ namespace LinLib
         /// </summary>
         /// <param name="reverseMatrix">reverse matrix to self</param>
         /// <returns>0 if success</returns>
-        public int Reverse(out Matrix reverseMatrix)
+        public int ReverseE(out Matrix reverseMatrix)
         {
             if (N != M)
             {
@@ -145,17 +163,40 @@ namespace LinLib
                 reverseMatrix = null;
                 return stdout;
             }
-            GaussEliminationBackward(u, e * p, out reverseMatrix);
+            UpperGaussEliminationBackward(u, e * p, out reverseMatrix);
             return 0;
         }
 
         /// <summary>
-        /// Solve set of linear equations Ax=b
+        /// Find out reverse matrix using Gauss-Jordan elimination
+        /// </summary>
+        /// <param name="reverseMatrix">reverse matrix to self</param>
+        /// <returns>0 if success</returns>
+        public int ReverseL(out Matrix reverseMatrix)
+        {
+            if (N != M)
+            {
+                reverseMatrix = null;
+                return -1;
+            }
+            int stdout = L_GaussEliminationForward(this, out var l, out var p, out var u);
+            if (stdout != 0)
+            {
+                reverseMatrix = null;
+                return stdout;
+            }
+            LowerGaussEliminationBackward(l, p, out var c);
+            UpperGaussEliminationBackward(u, c, out reverseMatrix);
+            return 0;
+        }
+
+        /// <summary>
+        /// Solve set of linear equations Ax=b through E matrix
         /// </summary>
         /// <param name="b">right side matrix</param>
         /// <param name="x">matrix of variables</param>
         /// <returns>0 if success</returns>
-        public int GaussElimination(Matrix b, out Matrix x)
+        public int GaussEliminationE(Matrix b, out Matrix x)
         {
             if (N != b.N)
             {
@@ -168,7 +209,31 @@ namespace LinLib
                 x = null;
                 return stdout;
             }
-            GaussEliminationBackward(u, e*p*b, out x);
+            UpperGaussEliminationBackward(u, e*p*b, out x);
+            return 0;
+        }
+
+        /// <summary>
+        /// Solve set of linear equations Ax=b through L matrix
+        /// </summary>
+        /// <param name="b">right side matrix</param>
+        /// <param name="x">matrix of variables</param>
+        /// <returns>0 if success</returns>
+        public int GaussEliminationL(Matrix b, out Matrix x)
+        {
+            if (N != b.N)
+            {
+                x = null;
+                return -1;
+            }
+            int stdout = L_GaussEliminationForward(this, out var l, out var p, out var u);
+            if (stdout != 0)
+            {
+                x = null;
+                return stdout;
+            }
+            LowerGaussEliminationBackward(l, p*b, out var c);
+            UpperGaussEliminationBackward(u, c, out x);
             return 0;
         }
 
@@ -185,7 +250,40 @@ namespace LinLib
             e = new Matrix(a.N, true);
             p = new Matrix(a.N, true);
             u = (Matrix)a.Clone();
-            //TODO
+            for (int i = 0; i < a.N; i++)
+            {
+                if (Math.Abs(u[i, i]) < Double.Epsilon)
+                {
+                    int iReverse = i;
+                    for (int j = i + 1; j < a.N; j++)
+                    {
+                        if (Math.Abs(u[j, i]) > Double.Epsilon)
+                        {
+                            iReverse = j;
+                            break;
+                        }
+                    }
+
+                    if (iReverse == i)
+                    {
+                        return -1;
+                    }
+                    e.ExchangeRows(iReverse, i, i);
+                    p.ExchangeRows(iReverse, i);
+                    u.ExchangeRows(iReverse, i);
+                }
+                Matrix eTmp = new Matrix(a.N, true);
+                for (int j = i + 1; j < a.N; j++)
+                {
+                    double coeff = u[j, i] / u[i, i];
+                    eTmp[j, i] = -coeff;
+                    for (int k = i; k < a.M; k++)
+                    {
+                        u[j, k] -= u[i, k] * coeff;
+                    }
+                }
+                e = eTmp * e;
+            }
             return 0;
         }
 
@@ -202,20 +300,91 @@ namespace LinLib
             l = new Matrix(a.N, true);
             p = new Matrix(a.N, true);
             u = (Matrix)a.Clone();
-            //TODO
+            for (int i = 0; i < a.N; i++)
+            {
+                if (Math.Abs(u[i, i]) < Double.Epsilon)
+                {
+                    int iReverse = i;
+                    for (int j = i + 1; j < a.N; j++)
+                    {
+                        if (Math.Abs(u[j, i]) > Double.Epsilon)
+                        {
+                            iReverse = j;
+                            break;
+                        }
+                    }
+
+                    if (iReverse == i)
+                    {
+                        return -1;
+                    }
+                    l.ExchangeRows(iReverse, i, i);
+                    p.ExchangeRows(iReverse, i);
+                    u.ExchangeRows(iReverse, i);
+                }
+                for (int j = i + 1; j < a.N; j++)
+                {
+                    double coeff = u[j, i] / u[i, i];
+                    l[j, i] = coeff;
+                    for (int k = i; k < a.M; k++)
+                    {
+                        u[j, k] -= u[i, k] * coeff;
+                    }
+                }
+            }
             return 0;
         }
 
         /// <summary>
-        /// Transforming augmented matrix [U|B] => [I|mB]
+        /// Transforming augmented matrix [U|B] => [I|c]
         /// </summary>
-        /// <param name="u">upper-triangular matrix (n*m)</param>
+        /// <param name="u">upper-triangular matrix</param>
         /// <param name="b">right-side matrix</param>
-        /// <param name="mb">right-side matrix after transformation</param>
-        private void GaussEliminationBackward(Matrix u, Matrix b, out Matrix mb)
+        /// <param name="c">right-side matrix after transformation</param>
+        private void UpperGaussEliminationBackward(Matrix u, Matrix b, out Matrix c)
         {
-            mb = (Matrix)b.Clone();
-            //TODO
+            c = (Matrix)b.Clone();
+            for (int i = c.N - 1; i >= 0; i--)
+            {
+                for (int j = 0; j < c.M; j++)
+                {
+                    c[i, j] /= u[i, i];
+                }
+                for (int j = 0; j < i; j++)
+                {
+                    double coeff = u[j, i];
+                    for (int k = 0; k < c.M; k++)
+                    {
+                        c[j, k] -= coeff * c[i, k];
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Transforming augmented matrix [L|B] => [I|c]
+        /// </summary>
+        /// <param name="l">lower-triangular matrix)</param>
+        /// <param name="b">right-side matrix</param>
+        /// <param name="c">right-side matrix after transformation</param>
+        private void LowerGaussEliminationBackward(Matrix l, Matrix b, out Matrix c)
+        {
+            c = (Matrix)b.Clone();
+            for (int i = 0; i < c.N; i++)
+            {
+                for (int j = 0; j < c.M; j++)
+                {
+                    c[i, j] /= l[i, i];
+                }
+                for (int j = i + 1; j < c.N; j++)
+                {
+                    double coeff = l[j, i];
+                    for (int k = 0; k < c.M; k++)
+                    {
+                        c[j, k] -= coeff * c[i, k];
+                    }
+                }
+            }
         }
 
         /// <summary>
