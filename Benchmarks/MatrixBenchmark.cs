@@ -9,7 +9,6 @@ using LinalLib;
 
 namespace Benchmarks
 {
-    //[ClrJob(true), CoreJob, MonoJob]
     [ClrJob(true)]
     [RPlotExporter, RankColumn]
     public class MatrixReverseBenchmark
@@ -27,15 +26,9 @@ namespace Benchmarks
         }
 
         [Benchmark]
-        public void ReverseE()
+        public void Reverse()
         {
-            _m.ReverseE(out var _);
-        }
-
-        [Benchmark]
-        public void ReverseL()
-        {
-            _m.ReverseL(out var _);
+            _m.Reverse(out var _);
         }
 
         public static Summary Run()
@@ -63,15 +56,9 @@ namespace Benchmarks
         }
 
         [Benchmark]
-        public void GaussEliminationE()
+        public void GaussElimination()
         {
-            _m.GaussEliminationE(_b, out var _);
-        }
-
-        [Benchmark]
-        public void GaussEliminationL()
-        {
-            _m.GaussEliminationL(_b, out var _);
+            _m.GaussElimination(_b, out var _);
         }
 
         public static Summary Run()
@@ -97,15 +84,9 @@ namespace Benchmarks
         }
 
         [Benchmark]
-        public void EpauFactorizationE()
+        public void EpauFactorization()
         {
-            _m.EPAU_factorizationE(out var _, out var _, out var _);
-        }
-
-        [Benchmark]
-        public void EpauFactorizationL()
-        {
-            _m.EPAU_factorizationL(out var _, out var _, out var _);
+            _m.EPAU_factorization(out var _, out var _, out var _);
         }
 
         public static Summary Run()

@@ -122,19 +122,7 @@ namespace LinalLib
         /// <param name="p">permutation matrix</param>
         /// <param name="u">upper-triangular matrix</param>
         /// <returns></returns>
-        public int EPAU_factorizationE(out Matrix e, out Matrix p, out Matrix u)
-        {
-            return E_GaussEliminationForward(this, out e, out p, out u);
-        }
-
-        /// <summary>
-        /// EPA = U factorization
-        /// </summary>
-        /// <param name="e">elimination matrix</param>
-        /// <param name="p">permutation matrix</param>
-        /// <param name="u">upper-triangular matrix</param>
-        /// <returns></returns>
-        public int EPAU_factorizationL(out Matrix e, out Matrix p, out Matrix u)
+        public int EPAU_factorization(out Matrix e, out Matrix p, out Matrix u)
         {
             int stdout = L_GaussEliminationForward(this, out var l, out p, out u);
             if (stdout != 0)
@@ -142,37 +130,16 @@ namespace LinalLib
                 e = null;
                 return stdout;
             }
-            return l.ReverseL(out e);
+            return l.Reverse(out e);
         }
+
 
         /// <summary>
         /// Find out reverse matrix using Gauss-Jordan elimination
         /// </summary>
         /// <param name="reverseMatrix">reverse matrix to self</param>
         /// <returns>0 if success</returns>
-        public int ReverseE(out Matrix reverseMatrix)
-        {
-            if (N != M)
-            {
-                reverseMatrix = null;
-                return -1;
-            }
-            int stdout = E_GaussEliminationForward(this, out var e, out var p, out var u);
-            if (stdout != 0)
-            {
-                reverseMatrix = null;
-                return stdout;
-            }
-            UpperGaussEliminationBackward(u, e * p, out reverseMatrix);
-            return 0;
-        }
-
-        /// <summary>
-        /// Find out reverse matrix using Gauss-Jordan elimination
-        /// </summary>
-        /// <param name="reverseMatrix">reverse matrix to self</param>
-        /// <returns>0 if success</returns>
-        public int ReverseL(out Matrix reverseMatrix)
+        public int Reverse(out Matrix reverseMatrix)
         {
             if (N != M)
             {
@@ -191,35 +158,12 @@ namespace LinalLib
         }
 
         /// <summary>
-        /// Solve set of linear equations Ax=b through E matrix
-        /// </summary>
-        /// <param name="b">right side matrix</param>
-        /// <param name="x">matrix of variables</param>
-        /// <returns>0 if success</returns>
-        public int GaussEliminationE(Matrix b, out Matrix x)
-        {
-            if (N != b.N)
-            {
-                x = null;
-                return -1;
-            }
-            int stdout = E_GaussEliminationForward(this, out var e, out var p, out var u);
-            if (stdout != 0)
-            {
-                x = null;
-                return stdout;
-            }
-            UpperGaussEliminationBackward(u, e*p*b, out x);
-            return 0;
-        }
-
-        /// <summary>
         /// Solve set of linear equations Ax=b through L matrix
         /// </summary>
         /// <param name="b">right side matrix</param>
         /// <param name="x">matrix of variables</param>
         /// <returns>0 if success</returns>
-        public int GaussEliminationL(Matrix b, out Matrix x)
+        public int GaussElimination(Matrix b, out Matrix x)
         {
             if (N != b.N)
             {
@@ -234,56 +178,6 @@ namespace LinalLib
             }
             LowerGaussEliminationBackward(l, p*b, out var c);
             UpperGaussEliminationBackward(u, c, out x);
-            return 0;
-        }
-
-        /// <summary>
-        /// Forward Gaussian Elimination to find E and P matrices from EPA = U equation
-        /// </summary>
-        /// <param name="a">coefficient matrix</param>
-        /// <param name="e">eliminitaion matrix</param>
-        /// <param name="p">permutation matrix</param>
-        /// <param name="u">upper-triangular matrix</param>
-        /// <returns>0 if success</returns>
-        private static int E_GaussEliminationForward(Matrix a, out Matrix e, out Matrix p, out Matrix u)
-        {
-            e = new Matrix(a.N, true);
-            p = new Matrix(a.N, true);
-            u = (Matrix)a.Clone();
-            for (int i = 0; i < a.N; i++)
-            {
-                if (Math.Abs(u[i, i]) < Double.Epsilon)
-                {
-                    int iReverse = i;
-                    for (int j = i + 1; j < a.N; j++)
-                    {
-                        if (Math.Abs(u[j, i]) > Double.Epsilon)
-                        {
-                            iReverse = j;
-                            break;
-                        }
-                    }
-
-                    if (iReverse == i)
-                    {
-                        return -1;
-                    }
-                    e.ExchangeRows(iReverse, i, i);
-                    p.ExchangeRows(iReverse, i);
-                    u.ExchangeRows(iReverse, i);
-                }
-                Matrix eTmp = new Matrix(a.N, true);
-                for (int j = i + 1; j < a.N; j++)
-                {
-                    double coeff = u[j, i] / u[i, i];
-                    eTmp[j, i] = -coeff;
-                    for (int k = i; k < a.M; k++)
-                    {
-                        u[j, k] -= u[i, k] * coeff;
-                    }
-                }
-                e = eTmp * e;
-            }
             return 0;
         }
 
