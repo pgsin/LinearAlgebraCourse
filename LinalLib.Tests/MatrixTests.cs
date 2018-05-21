@@ -10,7 +10,7 @@ namespace LinalLib.Tests
         public void MatrixIntBoolConstructorTest()
         {
             Matrix real = new Matrix(2);
-            Matrix actual = new Matrix(new double[,]{{0, 0}, {0, 0}});
+            Matrix actual = new Matrix(new double[,] { { 0, 0 }, { 0, 0 } });
             Assert.AreEqual(real.CompareTo(actual), 0);
             actual = new Matrix(new double[,] { { 0, 0 }, { 1, 0 } });
             Assert.AreNotEqual(real.CompareTo(actual), 0);
@@ -23,7 +23,7 @@ namespace LinalLib.Tests
         public void MatrixIntIntRandomTest()
         {
             Matrix real = new Matrix(2, 3);
-            Matrix actual = new Matrix(new double[,] { { 0, 0, 0}, { 0, 0, 0} });
+            Matrix actual = new Matrix(new double[,] { { 0, 0, 0 }, { 0, 0, 0 } });
             Assert.AreEqual(real.CompareTo(actual), 0);
             Random r = new Random();
             real = new Matrix(2, 3, r);
@@ -39,7 +39,7 @@ namespace LinalLib.Tests
             {
                 for (int j = 0; j < real.M; j++)
                 {
-                    Assert.AreEqual(d[i,j], real[i, j]);
+                    Assert.AreEqual(d[i, j], real[i, j]);
                 }
             }
         }
@@ -152,7 +152,7 @@ namespace LinalLib.Tests
             Assert.AreEqual(pa.CompareTo(pr), 0);
             Assert.AreEqual(ua.CompareTo(ur), 0);
         }
-        
+
         [TestMethod]
         public void PALU_factorization3Test()
         {
@@ -191,7 +191,7 @@ namespace LinalLib.Tests
         public void EPAU_factorization2Test()
         {
             Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 6, 8 } });
-            Matrix ea = new Matrix(new double[,] { { 1, 0, 0 }, { -4, 1, 0 }, {-2, 0, 1 } });
+            Matrix ea = new Matrix(new double[,] { { 1, 0, 0 }, { -4, 1, 0 }, { -2, 0, 1 } });
             Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0 } });
             Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 2, 4 }, { 0, 0, 3 } });
             Assert.AreEqual(a.EPAU_factorization(out Matrix er, out Matrix pr, out Matrix ur), 0);
@@ -245,7 +245,7 @@ namespace LinalLib.Tests
             Assert.AreEqual(a.GaussElimination(b, out Matrix xr), 0);
             Assert.AreEqual(xa.CompareTo(xr), 0);
         }
-        
+
         [TestMethod]
         public void GaussElimination2Test()
         {

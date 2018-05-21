@@ -7,7 +7,7 @@ namespace PlayGround
     {
         static void Main(string[] args)
         {
-            Matrix shivani = new Matrix(new double[,] { {2, 3, 3}, {0, 5, 7}, {6, 9, 8}});
+            Matrix shivani = new Matrix(new double[,] { { 2, 3, 3 }, { 0, 5, 7 }, { 6, 9, 8 } });
             Console.WriteLine(shivani);
             shivani.Reverse(out var rshivani);
             Console.WriteLine(rshivani);
@@ -22,7 +22,7 @@ namespace PlayGround
             shivani.Reverse(out var rjulie);
             Console.WriteLine(rjulie);
             Console.ReadLine();
-            Matrix a = new Matrix(new double[,] {{1, 1, 1}, {2, 2, 5}, {4, 6, 8}});
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 6, 8 } });
             Console.WriteLine(a);
             a.Reverse(out var aRev);
             Console.WriteLine((a * aRev).CompareTo(aRev * a) == 0);
@@ -36,7 +36,7 @@ namespace PlayGround
             a.Transpose(out var aTra);
             aTra.Transpose();
             Console.WriteLine(a.CompareTo(aTra) == 0);
-            Matrix b = new Matrix(new double[,] {{3}, {9}, {18}});
+            Matrix b = new Matrix(new double[,] { { 3 }, { 9 }, { 18 } });
             a.GaussElimination(b, out var x);
             Console.WriteLine((a * x).CompareTo(b) == 0);
             Console.ReadLine();
