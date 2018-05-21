@@ -105,12 +105,173 @@ namespace LinalLib.Tests
         [TestMethod]
         public void MatrixTransposeOutMatrixTest()
         {
-            Random r = new Random();
-            Matrix real = new Matrix(10, 10, r);
-            Matrix actual = (Matrix)real.Clone();
-            real.Transpose(out Matrix realTransposed);
-            realTransposed.Transpose(out Matrix realTransposedTwice);
-            Assert.AreEqual(realTransposedTwice.CompareTo(actual), 0);
+            Random rand = new Random();
+            Matrix r = new Matrix(10, 10, rand);
+            Matrix a = (Matrix)r.Clone();
+            r.Transpose(out Matrix rTransposed);
+            rTransposed.Transpose(out Matrix rTransposedTwice);
+            Assert.AreEqual(rTransposedTwice.CompareTo(a), 0);
+        }
+
+        [TestMethod]
+        public void PALU_factorization0Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 2, 1 }, { 8, 7 } });
+            Matrix la = new Matrix(new double[,] { { 1, 0 }, { 4, 1 } });
+            Matrix pa = new Matrix(new double[,] { { 1, 0 }, { 0, 1 } });
+            Matrix ua = new Matrix(new double[,] { { 2, 1 }, { 0, 3 } });
+            Assert.AreEqual(a.PALU_factorization(out Matrix lr, out Matrix pr, out Matrix ur), 0);
+            Assert.AreEqual(la.CompareTo(lr), 0);
+            Assert.AreEqual(pa.CompareTo(pr), 0);
+            Assert.AreEqual(ua.CompareTo(ur), 0);
+        }
+
+        [TestMethod]
+        public void PALU_factorization1Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 1, 2, 2 }, { 1, 2, 3 } });
+            Matrix la = new Matrix(new double[,] { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 1, 1 } });
+            Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } });
+            Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 1, 1 }, { 0, 0, 1 } });
+            Assert.AreEqual(a.PALU_factorization(out Matrix lr, out Matrix pr, out Matrix ur), 0);
+            Assert.AreEqual(la.CompareTo(lr), 0);
+            Assert.AreEqual(pa.CompareTo(pr), 0);
+            Assert.AreEqual(ua.CompareTo(ur), 0);
+        }
+
+
+        [TestMethod]
+        public void PALU_factorization2Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 6, 8 } });
+            Matrix la = new Matrix(new double[,] { { 1, 0, 0 }, { 4, 1, 0 }, { 2, 0, 1 } });
+            Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0 } });
+            Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 2, 4 }, { 0, 0, 3 } });
+            Assert.AreEqual(a.PALU_factorization(out Matrix lr, out Matrix pr, out Matrix ur), 0);
+            Assert.AreEqual(la.CompareTo(lr), 0);
+            Assert.AreEqual(pa.CompareTo(pr), 0);
+            Assert.AreEqual(ua.CompareTo(ur), 0);
+        }
+        
+        [TestMethod]
+        public void PALU_factorization3Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 4, 8 } });
+            Assert.AreNotEqual(a.PALU_factorization(out Matrix _, out Matrix _, out Matrix _), 0);
+        }
+
+        [TestMethod]
+        public void EPAU_factorization0Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 2, 1 }, { 8, 7 } });
+            Matrix ea = new Matrix(new double[,] { { 1, 0 }, { -4, 1 } });
+            Matrix pa = new Matrix(new double[,] { { 1, 0 }, { 0, 1 } });
+            Matrix ua = new Matrix(new double[,] { { 2, 1 }, { 0, 3 } });
+            Assert.AreEqual(a.EPAU_factorization(out Matrix er, out Matrix pr, out Matrix ur), 0);
+            Assert.AreEqual(ea.CompareTo(er), 0);
+            Assert.AreEqual(pa.CompareTo(pr), 0);
+            Assert.AreEqual(ua.CompareTo(ur), 0);
+        }
+
+        [TestMethod]
+        public void EPAU_factorization1Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 1, 2, 2 }, { 1, 2, 3 } });
+            Matrix ea = new Matrix(new double[,] { { 1, 0, 0 }, { -1, 1, 0 }, { 0, -1, 1 } });
+            Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } });
+            Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 1, 1 }, { 0, 0, 1 } });
+            Assert.AreEqual(a.EPAU_factorization(out Matrix er, out Matrix pr, out Matrix ur), 0);
+            Assert.AreEqual(ea.CompareTo(er), 0);
+            Assert.AreEqual(pa.CompareTo(pr), 0);
+            Assert.AreEqual(ua.CompareTo(ur), 0);
+        }
+
+
+        [TestMethod]
+        public void EPAU_factorization2Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 6, 8 } });
+            Matrix ea = new Matrix(new double[,] { { 1, 0, 0 }, { -4, 1, 0 }, {-2, 0, 1 } });
+            Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0 } });
+            Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 2, 4 }, { 0, 0, 3 } });
+            Assert.AreEqual(a.EPAU_factorization(out Matrix er, out Matrix pr, out Matrix ur), 0);
+            Assert.AreEqual(pa.CompareTo(pr), 0);
+            Assert.AreEqual(ua.CompareTo(ur), 0);
+            Assert.AreEqual(ea.CompareTo(er), 0);
+        }
+
+        [TestMethod]
+        public void EPAU_factorization3Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 4, 8 } });
+            Assert.AreNotEqual(a.EPAU_factorization(out Matrix _, out Matrix _, out Matrix _), 0);
+        }
+
+        [TestMethod]
+        public void Reverse0Test()
+        {
+            Random rand = new Random();
+            Matrix r = new Matrix(10, 10, rand);
+            Matrix a = (Matrix)r.Clone();
+            Assert.AreEqual(r.Reverse(out Matrix rReverse), 0);
+            Assert.AreEqual((a * rReverse).CompareTo(new Matrix(a.N, true)), 0);
+            Assert.AreEqual(rReverse.Reverse(out Matrix rReverseTwice), 0);
+            Assert.AreEqual(a.CompareTo(rReverseTwice), 0);
+        }
+
+        [TestMethod]
+        public void Reverse1Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 4, 8 } });
+            Assert.AreNotEqual(a.Reverse(out Matrix _), 0);
+        }
+
+        [TestMethod]
+        public void GaussElimination0Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 2, -1 }, { -1, 2 } });
+            Matrix b = new Matrix(new double[,] { { 0 }, { 3 } });
+            Matrix xa = new Matrix(new double[,] { { 1 }, { 2 } });
+            Assert.AreEqual(a.GaussElimination(b, out Matrix xr), 0);
+            Assert.AreEqual(xa.CompareTo(xr), 0);
+        }
+
+        [TestMethod]
+        public void GaussElimination1Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 2, -1, 0 }, { -1, 2, -1 }, { 0, -3, 4 } });
+            Matrix b = new Matrix(new double[,] { { 0 }, { -1 }, { 4 } });
+            Matrix xa = new Matrix(new double[,] { { 0 }, { 0 }, { 1 } });
+            Assert.AreEqual(a.GaussElimination(b, out Matrix xr), 0);
+            Assert.AreEqual(xa.CompareTo(xr), 0);
+        }
+        
+        [TestMethod]
+        public void GaussElimination2Test()
+        {
+            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 4, 8 } });
+            Matrix b = new Matrix(new double[,] { { 0 }, { -1 }, { 4 } });
+            Assert.AreNotEqual(a.GaussElimination(b, out Matrix _), 0);
+        }
+
+        [TestMethod]
+        public void ExchangeRowsTest()
+        {
+            Random rand = new Random();
+            Matrix r = new Matrix(10, 10, rand);
+            Matrix a = (Matrix)r.Clone();
+            int i = rand.Next(0, 10);
+            int j = rand.Next(0, 10);
+            a.ExchangeRows(i, j);
+            a.ExchangeRows(i, j);
+            Assert.AreEqual(a.CompareTo(r), 0);
+            int until = rand.Next(0, 10);
+            a.ExchangeRows(i, j, until);
+            a.ExchangeRows(i, j, until);
+            Assert.AreEqual(a.CompareTo(r), 0);
+            a.ExchangeRows(i, j);
+            a.ExchangeRows(j, i);
+            Assert.AreEqual(a.CompareTo(r), 0);
         }
     }
 }
