@@ -7,6 +7,21 @@ namespace PlayGround
     {
         static void Main(string[] args)
         {
+            Matrix shivani = new Matrix(new double[,] { {2, 3, 3}, {0, 5, 7}, {6, 9, 8}});
+            Console.WriteLine(shivani);
+            shivani.Reverse(out var rshivani);
+            Console.WriteLine(rshivani);
+            Console.ReadLine();
+            Matrix peli = new Matrix(new double[,] { { 2, -3, 0 }, { 4, -5, 1 }, { 2, -1, -3 } });
+            Console.WriteLine(peli);
+            shivani.Reverse(out var rpeli);
+            Console.WriteLine(rpeli);
+            Console.ReadLine();
+            Matrix julie = new Matrix(new double[,] { { 2, 1, 1 }, { 4, -6, 0 }, { -2, 7, 2 } });
+            Console.WriteLine(julie);
+            shivani.Reverse(out var rjulie);
+            Console.WriteLine(rjulie);
+            Console.ReadLine();
             Matrix a = new Matrix(new double[,] {{1, 1, 1}, {2, 2, 5}, {4, 6, 8}});
             Console.WriteLine(a);
             a.Reverse(out var aRev);
