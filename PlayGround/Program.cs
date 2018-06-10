@@ -26,7 +26,7 @@ namespace PlayGround
             Console.WriteLine(a);
             a.Reverse(out var aRev);
             Console.WriteLine((a * aRev).CompareTo(aRev * a) == 0);
-            Console.WriteLine((a * aRev).CompareTo(new Matrix(a.N, true)) == 0);
+            Console.WriteLine((a * aRev).CompareTo(new Matrix(a.M, true)) == 0);
             a.PALU_factorization(out var l0, out var p0, out var u0);
             a.EPAU_factorization(out var el, out var pl, out var ul);
             Console.WriteLine(p0.CompareTo(pl) == 0);

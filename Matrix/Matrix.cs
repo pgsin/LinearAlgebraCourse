@@ -6,8 +6,8 @@ namespace LinalLib
     public class Matrix : ICloneable, IComparable<Matrix>
     {
         private readonly double[,] _data;
-        public int N => _data.GetUpperBound(0) + 1;
-        public int M => _data.GetUpperBound(1) + 1;
+        public int M => _data.GetUpperBound(0) + 1;
+        public int N => _data.GetUpperBound(1) + 1;
 
         public Matrix(int n, bool diagonal = false)
         {
@@ -41,17 +41,17 @@ namespace LinalLib
 
         public static Matrix operator *(Matrix a, Matrix b)
         {
-            if (a.M != b.N)
+            if (a.N != b.M)
             {
                 return null;
             }
-            Matrix c = new Matrix(a.N, b.M);
-            for (int i = 0; i < c.N; i++)
+            Matrix c = new Matrix(a.M, b.N);
+            for (int i = 0; i < c.M; i++)
             {
-                for (int j = 0; j < c.M; j++)
+                for (int j = 0; j < c.N; j++)
                 {
                     double s = 0.0;
-                    for (int m = 0; m < a.M; m++)
+                    for (int m = 0; m < a.N; m++)
                     {
                         s += a[i, m] * b[m, j];
                     }
@@ -63,14 +63,14 @@ namespace LinalLib
 
         public static Matrix operator +(Matrix a, Matrix b)
         {
-            if (a.M != b.M || a.N != b.N)
+            if (a.N != b.N || a.M != b.M)
             {
                 return null;
             }
-            Matrix c = new Matrix(a.N, b.M);
-            for (int i = 0; i < c.N; i++)
+            Matrix c = new Matrix(a.M, b.N);
+            for (int i = 0; i < c.M; i++)
             {
-                for (int j = 0; j < c.M; j++)
+                for (int j = 0; j < c.N; j++)
                 {
                     c[i, j] = a[i, j] + b[i, j];
                 }
@@ -80,9 +80,9 @@ namespace LinalLib
 
         public void Transpose()
         {
-            for (int i = 0; i < N; i++)
+            for (int i = 0; i < M; i++)
             {
-                for (int j = i + 1; j < M; j++)
+                for (int j = i + 1; j < N; j++)
                 {
                     double tmp = _data[i, j];
                     _data[i, j] = _data[j, i];
@@ -93,10 +93,10 @@ namespace LinalLib
 
         public void Transpose(out Matrix m)
         {
-            m = new Matrix(N, M);
-            for (int i = 0; i < N; i++)
+            m = new Matrix(M, N);
+            for (int i = 0; i < M; i++)
             {
-                for (int j = 0; j < M; j++)
+                for (int j = 0; j < N; j++)
                 {
                     m[i, j] = _data[j, i];
                 }
@@ -104,10 +104,10 @@ namespace LinalLib
         }
 
         /// <summary>
-        /// PA = LU factorization
+        /// PA = LDU factorization
         /// </summary>
-        /// <param name="l">low-triangular matrix</param>
         /// <param name="p">permutation matrix</param>
+        /// <param name="l">low-triangular matrix</param>
         /// <param name="u">upper-triangular matrix</param>
         /// <returns></returns>
         public int PALU_factorization(out Matrix l, out Matrix p, out Matrix u)
@@ -141,7 +141,7 @@ namespace LinalLib
         /// <returns>0 if success</returns>
         public int Reverse(out Matrix reverseMatrix)
         {
-            if (N != M)
+            if (M != N)
             {
                 reverseMatrix = null;
                 return -1;
@@ -165,7 +165,7 @@ namespace LinalLib
         /// <returns>0 if success</returns>
         public int GaussElimination(Matrix b, out Matrix x)
         {
-            if (N != b.N)
+            if (M != b.M)
             {
                 x = null;
                 return -1;
@@ -191,15 +191,15 @@ namespace LinalLib
         /// <returns>0 if success</returns>
         private static int L_GaussEliminationForward(Matrix a, out Matrix l, out Matrix p, out Matrix u)
         {
-            l = new Matrix(a.N, true);
-            p = new Matrix(a.N, true);
+            l = new Matrix(a.M, true);
+            p = new Matrix(a.M, true);
             u = (Matrix)a.Clone();
-            for (int i = 0; i < a.N; i++)
+            for (int i = 0; i < a.M; i++)
             {
                 if (Math.Abs(u[i, i]) < Double.Epsilon)
                 {
                     int iReverse = i;
-                    for (int j = i + 1; j < a.N; j++)
+                    for (int j = i + 1; j < a.M; j++)
                     {
                         if (Math.Abs(u[j, i]) > Double.Epsilon)
                         {
@@ -216,11 +216,11 @@ namespace LinalLib
                     p.ExchangeRows(iReverse, i);
                     u.ExchangeRows(iReverse, i);
                 }
-                for (int j = i + 1; j < a.N; j++)
+                for (int j = i + 1; j < a.M; j++)
                 {
                     double coeff = u[j, i] / u[i, i];
                     l[j, i] = coeff;
-                    for (int k = i; k < a.M; k++)
+                    for (int k = i; k < a.N; k++)
                     {
                         u[j, k] -= u[i, k] * coeff;
                     }
@@ -238,16 +238,16 @@ namespace LinalLib
         private void UpperGaussEliminationBackward(Matrix u, Matrix b, out Matrix c)
         {
             c = (Matrix)b.Clone();
-            for (int i = c.N - 1; i >= 0; i--)
+            for (int i = c.M - 1; i >= 0; i--)
             {
-                for (int j = 0; j < c.M; j++)
+                for (int j = 0; j < c.N; j++)
                 {
                     c[i, j] /= u[i, i];
                 }
                 for (int j = 0; j < i; j++)
                 {
                     double coeff = u[j, i];
-                    for (int k = 0; k < c.M; k++)
+                    for (int k = 0; k < c.N; k++)
                     {
                         c[j, k] -= coeff * c[i, k];
                     }
@@ -264,16 +264,16 @@ namespace LinalLib
         private void LowerGaussEliminationBackward(Matrix l, Matrix b, out Matrix c)
         {
             c = (Matrix)b.Clone();
-            for (int i = 0; i < c.N; i++)
+            for (int i = 0; i < c.M; i++)
             {
-                for (int j = 0; j < c.M; j++)
+                for (int j = 0; j < c.N; j++)
                 {
                     c[i, j] /= l[i, i];
                 }
-                for (int j = i + 1; j < c.N; j++)
+                for (int j = i + 1; j < c.M; j++)
                 {
                     double coeff = l[j, i];
-                    for (int k = 0; k < c.M; k++)
+                    for (int k = 0; k < c.N; k++)
                     {
                         c[j, k] -= coeff * c[i, k];
                     }
@@ -289,7 +289,7 @@ namespace LinalLib
         /// <param name="until">last column</param>
         public void ExchangeRows(int i, int j, int until = Int32.MaxValue)
         {
-            until = Math.Min(M, until);
+            until = Math.Min(N, until);
             for (int k = 0; k < until; k++)
             {
                 double tmp = _data[i, k];
@@ -301,9 +301,9 @@ namespace LinalLib
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < N; i++)
+            for (int i = 0; i < M; i++)
             {
-                for (int j = 0; j < M; j++)
+                for (int j = 0; j < N; j++)
                 {
                     sb.Append($"{_data[i, j]:0.000}\t");
                 }
@@ -314,14 +314,14 @@ namespace LinalLib
 
         public int CompareTo(Matrix other)
         {
-            if (N != other.N || M != other.M)
+            if (M != other.M || N != other.N)
             {
                 return -1;
             }
 
-            for (int i = 0; i < N; i++)
+            for (int i = 0; i < M; i++)
             {
-                for (int j = 0; j < M; j++)
+                for (int j = 0; j < N; j++)
                 {
                     if (Math.Abs(_data[i, j] - other[i, j]) > 0.0000000001)
                     {

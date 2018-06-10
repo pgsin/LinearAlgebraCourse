@@ -35,9 +35,9 @@ namespace LinalLib.Tests
         {
             double[,] d = { { 0, 1 }, { 2, 3 } };
             Matrix real = new Matrix(d);
-            for (int i = 0; i < real.N; i++)
+            for (int i = 0; i < real.M; i++)
             {
-                for (int j = 0; j < real.M; j++)
+                for (int j = 0; j < real.N; j++)
                 {
                     Assert.AreEqual(d[i, j], real[i, j]);
                 }
@@ -214,7 +214,7 @@ namespace LinalLib.Tests
             Matrix r = new Matrix(10, 10, rand);
             Matrix a = (Matrix)r.Clone();
             Assert.AreEqual(r.Reverse(out Matrix rReverse), 0);
-            Assert.AreEqual((a * rReverse).CompareTo(new Matrix(a.N, true)), 0);
+            Assert.AreEqual((a * rReverse).CompareTo(new Matrix(a.M, true)), 0);
             Assert.AreEqual(rReverse.Reverse(out Matrix rReverseTwice), 0);
             Assert.AreEqual(a.CompareTo(rReverseTwice), 0);
         }
