@@ -104,18 +104,6 @@ namespace LinalLib
             }
         }
 
-        ///// <summary>
-        ///// PA = LDU factorization
-        ///// </summary>
-        ///// <param name="p">permutation matrix</param>
-        ///// <param name="l">low-triangular matrix</param>
-        ///// <param name="u">upper-triangular matrix</param>
-        ///// <returns></returns>
-        //public int PALU_factorization(out Matrix l, out Matrix p, out Matrix u)
-        //{
-        //    return L_GaussEliminationForward(this, out l, out p, out u);
-        //}
-
         /// <summary>
         /// Solve Ax=b (general case)
         /// </summary>
