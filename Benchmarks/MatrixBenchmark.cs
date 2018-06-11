@@ -58,7 +58,7 @@ namespace Benchmarks
         [Benchmark]
         public void GaussElimination()
         {
-            _m.GaussElimination(_b, out var _);
+            //_m.GaussElimination(_b, out var _);
         }
 
         public static Summary Run()
@@ -81,12 +81,6 @@ namespace Benchmarks
         {
             Random r = new Random(123);
             _m = new Matrix(N, N, r);
-        }
-
-        [Benchmark]
-        public void EpauFactorization()
-        {
-            _m.EPAU_factorization(out var _, out var _, out var _);
         }
 
         public static Summary Run()

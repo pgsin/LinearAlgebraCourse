@@ -120,7 +120,7 @@ namespace LinalLib.Tests
             Matrix la = new Matrix(new double[,] { { 1, 0 }, { 4, 1 } });
             Matrix pa = new Matrix(new double[,] { { 1, 0 }, { 0, 1 } });
             Matrix ua = new Matrix(new double[,] { { 2, 1 }, { 0, 3 } });
-            Assert.AreEqual(a.PALU_factorization(out Matrix lr, out Matrix pr, out Matrix ur), 0);
+            a.EchelonForm(out Matrix pr, out Matrix lr, out Matrix ur);
             Assert.AreEqual(la.CompareTo(lr), 0);
             Assert.AreEqual(pa.CompareTo(pr), 0);
             Assert.AreEqual(ua.CompareTo(ur), 0);
@@ -133,7 +133,7 @@ namespace LinalLib.Tests
             Matrix la = new Matrix(new double[,] { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 1, 1 } });
             Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } });
             Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 1, 1 }, { 0, 0, 1 } });
-            Assert.AreEqual(a.PALU_factorization(out Matrix lr, out Matrix pr, out Matrix ur), 0);
+            a.EchelonForm(out Matrix pr, out Matrix lr, out Matrix ur);
             Assert.AreEqual(la.CompareTo(lr), 0);
             Assert.AreEqual(pa.CompareTo(pr), 0);
             Assert.AreEqual(ua.CompareTo(ur), 0);
@@ -147,64 +147,10 @@ namespace LinalLib.Tests
             Matrix la = new Matrix(new double[,] { { 1, 0, 0 }, { 4, 1, 0 }, { 2, 0, 1 } });
             Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0 } });
             Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 2, 4 }, { 0, 0, 3 } });
-            Assert.AreEqual(a.PALU_factorization(out Matrix lr, out Matrix pr, out Matrix ur), 0);
+            a.EchelonForm(out Matrix pr, out Matrix lr, out Matrix ur);
             Assert.AreEqual(la.CompareTo(lr), 0);
             Assert.AreEqual(pa.CompareTo(pr), 0);
             Assert.AreEqual(ua.CompareTo(ur), 0);
-        }
-
-        [TestMethod]
-        public void PALU_factorization3Test()
-        {
-            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 4, 8 } });
-            Assert.AreNotEqual(a.PALU_factorization(out Matrix _, out Matrix _, out Matrix _), 0);
-        }
-
-        [TestMethod]
-        public void EPAU_factorization0Test()
-        {
-            Matrix a = new Matrix(new double[,] { { 2, 1 }, { 8, 7 } });
-            Matrix ea = new Matrix(new double[,] { { 1, 0 }, { -4, 1 } });
-            Matrix pa = new Matrix(new double[,] { { 1, 0 }, { 0, 1 } });
-            Matrix ua = new Matrix(new double[,] { { 2, 1 }, { 0, 3 } });
-            Assert.AreEqual(a.EPAU_factorization(out Matrix er, out Matrix pr, out Matrix ur), 0);
-            Assert.AreEqual(ea.CompareTo(er), 0);
-            Assert.AreEqual(pa.CompareTo(pr), 0);
-            Assert.AreEqual(ua.CompareTo(ur), 0);
-        }
-
-        [TestMethod]
-        public void EPAU_factorization1Test()
-        {
-            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 1, 2, 2 }, { 1, 2, 3 } });
-            Matrix ea = new Matrix(new double[,] { { 1, 0, 0 }, { -1, 1, 0 }, { 0, -1, 1 } });
-            Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } });
-            Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 1, 1 }, { 0, 0, 1 } });
-            Assert.AreEqual(a.EPAU_factorization(out Matrix er, out Matrix pr, out Matrix ur), 0);
-            Assert.AreEqual(ea.CompareTo(er), 0);
-            Assert.AreEqual(pa.CompareTo(pr), 0);
-            Assert.AreEqual(ua.CompareTo(ur), 0);
-        }
-
-
-        [TestMethod]
-        public void EPAU_factorization2Test()
-        {
-            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 6, 8 } });
-            Matrix ea = new Matrix(new double[,] { { 1, 0, 0 }, { -4, 1, 0 }, { -2, 0, 1 } });
-            Matrix pa = new Matrix(new double[,] { { 1, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0 } });
-            Matrix ua = new Matrix(new double[,] { { 1, 1, 1 }, { 0, 2, 4 }, { 0, 0, 3 } });
-            Assert.AreEqual(a.EPAU_factorization(out Matrix er, out Matrix pr, out Matrix ur), 0);
-            Assert.AreEqual(pa.CompareTo(pr), 0);
-            Assert.AreEqual(ua.CompareTo(ur), 0);
-            Assert.AreEqual(ea.CompareTo(er), 0);
-        }
-
-        [TestMethod]
-        public void EPAU_factorization3Test()
-        {
-            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 4, 8 } });
-            Assert.AreNotEqual(a.EPAU_factorization(out Matrix _, out Matrix _, out Matrix _), 0);
         }
 
         [TestMethod]
@@ -232,8 +178,8 @@ namespace LinalLib.Tests
             Matrix a = new Matrix(new double[,] { { 2, -1 }, { -1, 2 } });
             Matrix b = new Matrix(new double[,] { { 0 }, { 3 } });
             Matrix xa = new Matrix(new double[,] { { 1 }, { 2 } });
-            Assert.AreEqual(a.GaussElimination(b, out Matrix xr), 0);
-            Assert.AreEqual(xa.CompareTo(xr), 0);
+            Assert.AreEqual(a.CompleteSolution(b, out Matrix pr, out Matrix xpr, out Matrix xnr), 0);
+            Assert.AreEqual(xa.CompareTo(xpr), 0);
         }
 
         [TestMethod]
@@ -242,16 +188,8 @@ namespace LinalLib.Tests
             Matrix a = new Matrix(new double[,] { { 2, -1, 0 }, { -1, 2, -1 }, { 0, -3, 4 } });
             Matrix b = new Matrix(new double[,] { { 0 }, { -1 }, { 4 } });
             Matrix xa = new Matrix(new double[,] { { 0 }, { 0 }, { 1 } });
-            Assert.AreEqual(a.GaussElimination(b, out Matrix xr), 0);
-            Assert.AreEqual(xa.CompareTo(xr), 0);
-        }
-
-        [TestMethod]
-        public void GaussElimination2Test()
-        {
-            Matrix a = new Matrix(new double[,] { { 1, 1, 1 }, { 2, 2, 5 }, { 4, 4, 8 } });
-            Matrix b = new Matrix(new double[,] { { 0 }, { -1 }, { 4 } });
-            Assert.AreNotEqual(a.GaussElimination(b, out Matrix _), 0);
+            Assert.AreEqual(a.CompleteSolution(b, out Matrix pr, out Matrix xpr, out Matrix xnr), 0);
+            Assert.AreEqual(xa.CompareTo(xpr), 0);
         }
 
         [TestMethod]

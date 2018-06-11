@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinalLib", "Matrix\LinalLib.csproj", "{61EFFF1D-5A3C-40E0-81DE-86127B129E67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinalLib", "LinalLib\LinalLib.csproj", "{61EFFF1D-5A3C-40E0-81DE-86127B129E67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayGround", "PlayGround\PlayGround.csproj", "{DFED0596-478D-4F87-994E-A1637FBE117C}"
 EndProject

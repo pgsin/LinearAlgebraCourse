@@ -55,8 +55,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Matrix\LinalLib.csproj">
-      <Project>{61EFFF1D-5A3C-40E0-81DE-86127B129E67}</Project>
+    <ProjectReference Include="..\LinalLib\LinalLib.csproj">
+      <Project>{61efff1d-5a3c-40e0-81de-86127b129e67}</Project>
       <Name>LinalLib</Name>
     </ProjectReference>
   </ItemGroup>
