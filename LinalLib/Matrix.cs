@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace LinalLib
@@ -10,7 +9,17 @@ namespace LinalLib
         private readonly double[,] _data;
         public int M => _data.GetUpperBound(0) + 1;
         public int N => _data.GetUpperBound(1) + 1;
-        //public int Rank; TODO
+        private int _rank = -1;
+        public int Rank {
+            get
+            {
+                if (_rank == -1)
+                {
+                    ForwardElimination(out _, out _, out _, out _);
+                }
+                return _rank;
+            }
+        }
 
         public Matrix(int m, bool diagonal = false)
         {
@@ -128,7 +137,7 @@ namespace LinalLib
                 xn = null;
                 return -1;
             }
-            ForwardElimination(this, out p, out Matrix lre, out Matrix ue, out int[] pivots);
+            ForwardElimination(out p, out Matrix lre, out Matrix ue, out int[] pivots);
             DiagonalElimination(ue, pivots, out Matrix d, out Matrix uue);
             UpperBackwardElimination(uue, pivots, out Matrix ure, out var rref);
             LowerBackwardElimination(lre, p*b, out Matrix c);
@@ -140,7 +149,6 @@ namespace LinalLib
                 xn = null;
                 return -1;
             }
-
             UpperBackwardElimination(d*ure, c, out var b0);
             ConstructCompleteMatrix(rref, b0, pivots, out xp, out xn);
             return 0;
@@ -155,7 +163,7 @@ namespace LinalLib
         /// <returns>0 if success</returns>
         public void NullSpaceSolution(out Matrix p, out Matrix re, out Matrix xn)
         {
-            ForwardElimination(this, out p, out Matrix lre, out Matrix ue, out int[] pivots);
+            ForwardElimination(out p, out Matrix lre, out Matrix ue, out int[] pivots);
             DiagonalElimination(ue, pivots, out Matrix d, out Matrix uue);
             UpperBackwardElimination(uue, pivots, out Matrix ure, out var rref);
             re = lre * d * ure;
@@ -228,7 +236,7 @@ namespace LinalLib
                 reverseMatrix = null;
                 return -1;
             }
-            ForwardElimination(this, out Matrix p, out Matrix lre, out Matrix ue, out int[] pivots);
+            ForwardElimination(out Matrix p, out Matrix lre, out Matrix ue, out int[] pivots);
             if (pivots.Length !=  M)
             {
                 reverseMatrix = null;
@@ -247,8 +255,8 @@ namespace LinalLib
         /// <param name="re">reverse elimination matrix</param>
         /// <param name="e">reduced row echelon form</param>
         /// <param name="pivots">set of pivot columns</param>
-        public void EchelonForm(out Matrix p, out Matrix re, out Matrix e, out int[] pivots) => ForwardElimination(this, out p, out re, out e, out pivots);
-
+        public void EchelonForm(out Matrix p, out Matrix re, out Matrix e, out int[] pivots) => ForwardElimination(out p, out re, out e, out pivots);
+        
         /// <summary>
         /// Produce Uni-Echelon Form (Uni-Triangular)
         /// PA = LDU transformation
@@ -260,7 +268,7 @@ namespace LinalLib
         /// <param name="pivots">set of pivot columns</param>
         public void UniEchelonForm(out Matrix p, out Matrix re, out Matrix d, out Matrix e, out int[] pivots)
         {
-            ForwardElimination(this, out p, out re, out var ue, out pivots);
+            ForwardElimination(out p, out re, out var ue, out pivots);
             DiagonalElimination(ue, pivots, out d, out e);
         }
 
@@ -273,7 +281,7 @@ namespace LinalLib
         /// <param name="pivots">set of pivot columns</param>
         public void RowReducedEchelonForm(out Matrix p, out Matrix re, out Matrix rref, out int[] pivots)
         {
-            ForwardElimination(this, out p, out Matrix lre, out Matrix ue, out pivots);
+            ForwardElimination(out p, out Matrix lre, out Matrix ue, out pivots);
             DiagonalElimination(ue, pivots, out Matrix d, out Matrix uue);
             UpperBackwardElimination(uue, pivots, out Matrix ure, out rref);
             re = lre * d * ure;
@@ -282,24 +290,23 @@ namespace LinalLib
         /// <summary>
         /// Forward Elimination to find L and P matrices from PA = LU equation
         /// </summary>
-        /// <param name="a">the matrix</param>
         /// <param name="p">row-permutation matrix</param>
         /// <param name="lre">lower reverse elimination matrix</param>
         /// <param name="ue">upper echelon matrix</param>
         /// <param name="pivotColumns">indexes of pivot columns</param>
-        private static void ForwardElimination(Matrix a, out Matrix p, out Matrix lre, out Matrix ue, out int[] pivotColumns)
+        private void ForwardElimination(out Matrix p, out Matrix lre, out Matrix ue, out int[] pivotColumns)
         {
-            lre = new Matrix(a.M, true);
-            p = new Matrix(a.M, true);
-            ue = (Matrix)a.Clone();
-            pivotColumns = new int[a.M];
+            lre = new Matrix(M, true);
+            p = new Matrix(M, true);
+            ue = (Matrix)Clone();
+            pivotColumns = new int[M];
             int i = 0, i0 = 0;
-            for (; i < a.M; i++, i0++)
+            for (; i < M; i++, i0++)
             {
-                for (; i0 < a.N && Math.Abs(ue[i, i0]) < Epsilon; i0++)
+                for (; i0 < N && Math.Abs(ue[i, i0]) < Epsilon; i0++)
                 {
                     int iReverse = i;
-                    for (int j = i + 1; j < a.M; j++)
+                    for (int j = i + 1; j < M; j++)
                     {
                         if (Math.Abs(ue[j, i0]) > Epsilon)
                         {
@@ -313,19 +320,20 @@ namespace LinalLib
                     ue.ExchangeRows(iReverse, i);
                     break;
                 }
-                if (i0 == a.N) break;
+                if (i0 == N) break;
                 pivotColumns[i] = i0;
-                for (int j = i + 1; j < a.M; j++)
+                for (int j = i + 1; j < M; j++)
                 {
                     double coeff = ue[j, i0] / ue[i, i0];
                     lre[j, i] = coeff;
-                    for (int k = i0; k < a.N; k++)
+                    for (int k = i0; k < N; k++)
                     {
                         ue[j, k] -= ue[i, k] * coeff;
                     }
                 }
             }
             Array.Resize(ref pivotColumns, i);
+            _rank = pivotColumns.Length;
         }
 
 
